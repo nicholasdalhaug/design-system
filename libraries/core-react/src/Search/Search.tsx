@@ -1,7 +1,5 @@
-// @ts-nocheck
 import React, { useState, useRef, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import styled, { css } from 'styled-components'
+import styled, { css, StyledComponent } from 'styled-components'
 import { search, close } from '@equinor/eds-icons'
 import { search as tokens } from './Search.tokens'
 import { Icon } from '../Icon'
@@ -29,6 +27,11 @@ const {
   },
 } = tokens
 
+type ContainerProps = {
+  isFocused: boolean
+  disabled: boolean
+}
+
 const Container = styled.span`
   position: relative;
   background: ${background};
@@ -49,7 +52,7 @@ const Container = styled.span`
 
   ${spacingsTemplate(spacings)}
 
-  ${({ isFocused }) =>
+  ${({ isFocused }: ContainerProps) =>
     isFocused &&
     css`
       border: ${border.width} solid ${border.focus.color};
@@ -58,7 +61,7 @@ const Container = styled.span`
   &::placeholder {
     color: ${placeholder.color};
   }
-  ${({ disabled }) =>
+  ${({ disabled }: ContainerProps) =>
     disabled
       ? css`
           cursor: not-allowed;
@@ -121,6 +124,10 @@ const Input = styled.input`
     `}
 `
 
+interface InsideButtonProps {
+  isActive: boolean
+}
+
 const InsideButton = styled.div`
   display: flex;
   align-items: center;
@@ -151,7 +158,7 @@ const InsideButton = styled.div`
     content: '';
   }
 
-  ${({ isActive }) =>
+  ${({ isActive }: InsideButtonProps) =>
     isActive &&
     css`
       visibility: visible;
@@ -162,17 +169,26 @@ const InsideButton = styled.div`
     `}
 `
 
+type Props = {
+  /** Disabled state */
+  disabled?: boolean
+  /** Default value for search field */
+  defaultValue?: string
+  /** Value for search field */
+  value?: string
+} & React.HTMLAttributes<HTMLInputElement>
+
 export const Search = React.forwardRef(function EdsSearch(
   {
     onChange,
-    defaultValue,
+    defaultValue = '',
     value,
-    className,
-    disabled,
+    className = '',
+    disabled = false,
     onBlur,
     onFocus,
     ...rest
-  },
+  }: Props,
   ref,
 ) {
   const isControlled = typeof value !== 'undefined'
@@ -237,13 +253,13 @@ export const Search = React.forwardRef(function EdsSearch(
       role: 'searchbox',
       'aria-label': 'search input',
       onBlur: (e) => {
-        handleBlur(e)
+        handleBlur()
         if (onBlur) {
           onBlur(e)
         }
       },
       onFocus: (e) => {
-        handleFocus(e)
+        handleFocus()
         if (onFocus) {
           onFocus(e)
         }
@@ -281,35 +297,5 @@ export const Search = React.forwardRef(function EdsSearch(
     </Container>
   )
 })
-
-Search.propTypes = {
-  /** @ignore */
-  className: PropTypes.string,
-  /** Placeholder */
-  placeholder: PropTypes.string,
-  /** Disabled state */
-  disabled: PropTypes.bool,
-  /** onChange handler */
-  onChange: PropTypes.func,
-  /** Default value for search field */
-  defaultValue: PropTypes.string,
-  /** Value for search field */
-  value: PropTypes.string,
-  /** onBlur handler */
-  onBlur: PropTypes.func,
-  /** onFocus handler */
-  onFocus: PropTypes.func,
-}
-
-Search.defaultProps = {
-  className: '',
-  placeholder: '',
-  disabled: false,
-  onChange: undefined,
-  defaultValue: '',
-  value: undefined,
-  onBlur: undefined,
-  onFocus: undefined,
-}
 
 Search.displayName = 'eds-search'

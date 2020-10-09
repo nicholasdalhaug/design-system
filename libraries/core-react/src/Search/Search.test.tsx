@@ -64,6 +64,7 @@ describe('Search', () => {
     render(
       <Search
         id={searchId}
+        placeholder="Write search here"
         defaultValue="initial value"
         onChange={handleOnChange}
       />,
@@ -115,7 +116,7 @@ describe('Search', () => {
 
     rerender(<Search value="new" />)
 
-    const searchBox = screen.queryByRole('searchbox')
+    const searchBox = screen.queryByRole('searchbox') as HTMLInputElement
 
     expect(searchBox.value).toEqual('new')
   })
